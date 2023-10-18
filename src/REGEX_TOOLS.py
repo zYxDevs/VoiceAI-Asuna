@@ -24,7 +24,7 @@ class WEB_RE:
 	# fragment: # part
 	link_facts = Callable_dict()
 
-	def gen_link_facts(self, link):  # fc=080C
+	def gen_link_facts(self, link):	# fc=080C
 		"""Generates facts for a link
 
 		link: link to be checked"""
@@ -51,8 +51,7 @@ class WEB_RE:
 		facts['needs scheme'] = None
 		facts['is absolute'] = None
 
-		x = self.link_extractor.search(link)
-		if x:
+		if x := self.link_extractor.search(link):
 			facts['is link'] = True
 			facts['scheme'] = x.group('schema')
 			facts['scheme'] = x.group('scheme')
@@ -115,8 +114,7 @@ class Tool_belt:
 			if isinstance(ptrn, str):
 				ptrn = re_compile(re.escape(ptrn), re.IGNORECASE)
 
-			m = ptrn.search(string)
-			if m:
+			if m := ptrn.search(string):
 				if PRINT_PATTERN: _pp(ptrn)
 				return m.group(0)
 			
@@ -130,15 +128,13 @@ class Tool_belt:
 		for i in patterns:
 			if isinstance(i, re.Pattern):
 
-				m = i.fullmatch(string)
-				if m:
+				if m := i.fullmatch(string):
 					if PRINT_PATTERN: _pp(i)
 					return m.group(0)
 
-			else:
-				if string == i:
-					if PRINT_PATTERN: _pp(i)
-					return i
+			elif string == i:
+				if PRINT_PATTERN: _pp(i)
+				return i
 
 	def search(self, patterns: Union[list, str, re.Pattern], string: str, PRINT_PATTERN=False):
 		"""checks and returns `re.match object` if it has any of the patterns in the given patterns list
@@ -151,8 +147,7 @@ class Tool_belt:
 			if isinstance(ptrn, str):
 				ptrn = re_compile(ptrn, re.IGNORECASE)
 
-			m = ptrn.search(string)
-			if m:
+			if m := ptrn.search(string):
 				if PRINT_PATTERN: _pp(ptrn)
 				return m
 			

@@ -20,11 +20,10 @@ failed = {
 
 def random_string(length):
 	letters = string.ascii_lowercase
-	result_str = ''.join(random.choice(letters) for i in range(length))
-	return result_str
+	return ''.join(random.choice(letters) for _ in range(length))
 
 def attack():
-	for i in range(10000):
+	for _ in range(10000):
 		username = random_string(10)
 		password = random_string(10)
 		data = {
@@ -34,17 +33,15 @@ def attack():
 		}
 		try:
 			r = requests.post("http://localhost:45454/do_signup", files=data)
-			if not r.status_code == 200:
+			if r.status_code != 200:
 				failed["signup"] += 1
 		except Exception:
 			exceptions["signup"] += 1
 
-			continue
-
 		# print(r.text)
 
 def attack2():
-	for i in range(10000):
+	for _ in range(10000):
 		username = random_string(10)
 		password = random_string(10)
 		data = {
@@ -54,11 +51,10 @@ def attack2():
 		}
 		try:
 			r = requests.post("http://localhost:45454/do_login", files=data)
-			if not r.status_code == 200:
+			if r.status_code != 200:
 				failed["login"] += 1
 		except Exception:
 			exceptions["login"] += 1
-			continue
 
 t = time.time()
 # run the attack
@@ -71,7 +67,7 @@ print(exceptions)
 print("Failed:")
 print(failed)
 
-print("Time taken: "+str(tt))
+print(f"Time taken: {str(tt)}")
 
 
 
@@ -104,4 +100,4 @@ print(exceptions)
 print("Failed:")
 print(failed)
 
-print("Time taken: "+str(tt))
+print(f"Time taken: {str(tt)}")

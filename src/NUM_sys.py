@@ -112,13 +112,9 @@ def dec2base(n,base):
 def base2dec(n, base, _type:type=int):
 	if n =='':
 		return ''
-	out=0
 	n=str(n)[::-1]
 
-	for  i in range(len(n)):
-
-		out+=base_li0[n[i]]*(base**(i))
-
+	out = sum(base_li0[n[i]]*(base**(i)) for i in range(len(n)))
 	return _type(out)
 
 def base2base(n, ibase, obase):
@@ -138,7 +134,7 @@ def compressed_dt(_dt= ''):
 	# OLD VERSION# dt_now= int((dt_() if _dt is None else _dt).replace('-','').replace(' ','').replace('.','').replace(':',''))
 	_dt = str(time.time()) if _dt is None else _dt
 	xtime = _dt.split('.')
-	return dec2base(xtime[0], 63) +'.'+ dec2base(xtime[1], 63)
+	return f'{dec2base(xtime[0], 63)}.{dec2base(xtime[1], 63)}'
 	# return dec2base(dt_now,63)
 
 cdt_ = compressed_dt
@@ -149,7 +145,7 @@ def compressed_ip(ip):
 
 	# if IPv4
 	joint = "~"
-	junk = [randint(0,255) for i in range(4)]
+	junk = [randint(0,255) for _ in range(4)]
 	if ":" in ip: # IPv6
 		ip_now= ip.split(':')
 
@@ -194,7 +190,7 @@ def dec_dt(dt):
 	DD= ddt[6:8]
 	hh= ddt[8:10]
 	mm= ddt[10:12]
-	ss= ddt[12:14]+'.'+ddt[14:]
+	ss = f'{ddt[12:14]}.{ddt[14:]}'
 
 	return (YYYY,MM,DD,hh, mm, ss)
 
@@ -254,10 +250,7 @@ def fmbytes(B=0):
 		return '%.2f MB  '%(B/MB)
 	if B/KB>1:
 		return '%.2f KB  '%(B/KB)
-	if B>1:
-		return '%i bytes'%B
-
-	return "%i byte"%B
+	return '%i bytes'%B if B>1 else "%i byte"%B
 
 
 def humanbytes(B=0):

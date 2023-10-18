@@ -2,12 +2,12 @@
 import webbrowser
 import re
 def generate_list(x):
-	l = [globals()[name] for name in globals().keys() if name.startswith(x)]
+	l = [globals()[name] for name in globals() if name.startswith(x)]
 	return [item for sublist in l for item in sublist]
 
 def gen_list(x):
-	l = [globals()[name] for name in globals().keys() if name.startswith(x)]
-	return [sublist for sublist in l]
+	l = [globals()[name] for name in globals() if name.startswith(x)]
+	return list(l)
 
 
 url_google=('https://www.google.com','google','gogle','gooogle')
@@ -49,4 +49,4 @@ def googler(link):
 			web_go(i[0])
 def searcher(x):
 	loc= x.replace(' ','+')
-	webbrowser.open_new_tab( 'https://www.google.com/search?q='+loc)
+	webbrowser.open_new_tab(f'https://www.google.com/search?q={loc}')

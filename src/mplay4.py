@@ -23,9 +23,7 @@ if os_name == 'nt':
 		def directsend(self, command):
 			buf = c_buffer(255)
 			command = ''.join(command).encode(getfilesystemencoding())
-			# command = ''.join(command)
-			errorCode = int(windll.winmm.mciSendStringA(command, buf, 254, 0))
-			if errorCode:
+			if errorCode := int(windll.winmm.mciSendStringA(command, buf, 254, 0)):
 				errorBuffer = c_buffer(255)
 				windll.winmm.mciGetErrorStringA(errorCode, errorBuffer, 254)
 				exceptionMessage = ('\n	Error ' + str(errorCode) + ' for command:'
@@ -39,13 +37,13 @@ if os_name == 'nt':
 			self.error = error
 			#filename = filename.replace('/', '\\')
 			self.filename = filename
-			self._alias = 'yui_' + str(random.random())
+			self._alias = f'yui_{random.random()}'
 			# print(self._alias)
 
-			self.directsend('open "'+filename+'" alias ' +self._alias )
-			self.directsend('set %s time format milliseconds' % self._alias)
+			self.directsend(f'open "{filename}" alias {self._alias}')
+			self.directsend(f'set {self._alias} time format milliseconds')
 
-			self._length_ms = int(self.directsend('status %s length' % self._alias).decode())
+			self._length_ms = int(self.directsend(f'status {self._alias} length').decode())
 			#print(self._length_ms)
 			#self.directsend('play %s from %d to %d'% (self._alias, 0, self._length_ms) )
 		def volume(self, level):
@@ -54,7 +52,7 @@ if os_name == 'nt':
 			self.directsend('setaudio %s volume to %d' %
 					(self._alias, level * 10) )
 		def isvolume(self):
-			return self.directsend('status %s volume' % self._alias)
+			return self.directsend(f'status {self._alias} volume')
 
 		def play(self, start_ms=None, end_ms=None):
 			start_ms = 0 if not start_ms else start_ms
@@ -66,36 +64,36 @@ if os_name == 'nt':
 		def _mode(self):
 			# returns binary
 			#print(self.directsend('status %s mode' % self._alias))
-			return self.directsend('status %s mode' % self._alias)
+			return self.directsend(f'status {self._alias} mode')
 
 		def isrunning(self):
-			return self._mode() == b'playing' or self._mode() == b'paused'
+			return self._mode() in [b'playing', b'paused']
 
 		def isplaying(self):
 			return self._mode() == b'playing'
 
 
 		def pause(self):
-			self.directsend('pause %s' % self._alias)
+			self.directsend(f'pause {self._alias}')
 
 		def resume(self):
-			self.directsend('resume %s' % self._alias)
+			self.directsend(f'resume {self._alias}')
 
 		def ispaused(self):
 			return self._mode() == b'paused'
 
 		def stop(self):
-			self.directsend('stop %s' % self._alias)
-			self.directsend('seek %s to start' % self._alias)
+			self.directsend(f'stop {self._alias}')
+			self.directsend(f'seek {self._alias} to start')
 
 		def replay(self):
-			self.directsend('stop %s' % self._alias)
+			self.directsend(f'stop {self._alias}')
 			self.play()
 
 		# TODO: this closes the file even if we're still playing.
 		# no good.  detect isplaying(), and don't die till then!
 		def close(self):
-			self.directsend('close %s' % self._alias)
+			self.directsend(f'close {self._alias}')
 		def __del__(self):
 			self.close()
 else:

@@ -11,15 +11,12 @@ import DATA_sys as Datasys
 from PRINT_TEXT3 import xprint
 from REGEX_TOOLS import web_re
 
-def get_sep(path):  # fc=0601
+def get_sep(path):	# fc=0601
 	"""returns the separator of the path"""
 	if '/' in path:
 		return '/'
 
-	if '\\' in path:
-		return '\\'
-	#else:
-	return os_sep
+	return '\\' if '\\' in path else os_sep
 
 def loc(path, _os_name='Linux'):  # fc=0602 v
 	"""to fix dir problem based on os
@@ -79,7 +76,7 @@ def get_file_name(directory, mode='dir'):  # fc=0603 v
 	#else:
 	raise ValueError
 
-def get_file_ext(directory, mode='dir', no_format='noformat'):  # fc=0604 v
+def get_file_ext(directory, mode='dir', no_format='noformat'):	# fc=0604 v
 	"""to get the extension of a file directory
 
 	args:
@@ -89,10 +86,7 @@ def get_file_ext(directory, mode='dir', no_format='noformat'):  # fc=0604 v
 		no_format: returning format if no file extension was detected *noformat"""
 
 	temp = get_file_name(directory, mode).rsplit('.',1)
-	if len(temp) == 1:
-		return no_format
-	#else:
-	return temp[1]
+	return no_format if len(temp) == 1 else temp[1]
 
 
 def get_dir(directory, mode='dir'):  # fc=0605 v
@@ -155,7 +149,7 @@ BUSY_FS = Callable_dict()
 
 def reader(direc, read_mode='r', ignore_error=False, output=None,
 			encoding='utf-8', f_code='?????', on_missing=None,
-			ignore_missing_log=False, timeout=3):  # fc=0607 v
+			ignore_missing_log=False, timeout=3):	# fc=0607 v
 	"""reads file from given directory. If NOT found, returns `None`
 
 	args:
@@ -174,12 +168,7 @@ def reader(direc, read_mode='r', ignore_error=False, output=None,
 	if read_mode in ('w', 'wb', 'a', 'ab', 'x', 'xb'):
 		xprint("/r/Invaid read mode:/wh/ %s/=//y/ is not a valid read mode.\nTry using 'r' or 'rb' based on your need/=/")
 		raise ValueError
-	if 'b' in read_mode:
-		read_mode = 'rb'
-
-	else:
-		read_mode = 'r'
-
+	read_mode = 'rb' if 'b' in read_mode else 'r'
 	location = loc(direc)
 
 	if not os.path.isfile(location):
@@ -221,31 +210,27 @@ def reader(direc, read_mode='r', ignore_error=False, output=None,
 
 
 	if output is None:
-		if read_mode == 'r':
-			output = 'str'
-		else:
-			output = 'bin'
+		output = 'str' if read_mode == 'r' else 'bin'
 	if ignore_error:
 		out = Datasys.remove_non_uni(out, '00013', output)
 
-	else:
-		if output == 'str' and read_mode == 'rb':
-			try:
-				out = out.decode()
-			except Exception as e:
-				xprint(f"/r/failed to decode /hui/{loc(direc)}/=//y/ to the specified character encoding. \nError code: 0607x5")
-				raise e
-		elif output == 'bin' and read_mode == 'r':
-			try:
-				out = out.encode(encoding)
-			except Exception as e:
-				xprint(loc(direc), 'failed to encode to the specified character encoding. \nError code: 0607x5')
-				raise e
+	elif output == 'str' and read_mode == 'rb':
+		try:
+			out = out.decode()
+		except Exception as e:
+			xprint(f"/r/failed to decode /hui/{loc(direc)}/=//y/ to the specified character encoding. \nError code: 0607x5")
+			raise e
+	elif output == 'bin' and read_mode == 'r':
+		try:
+			out = out.encode(encoding)
+		except Exception as e:
+			xprint(loc(direc), 'failed to encode to the specified character encoding. \nError code: 0607x5')
+			raise e
 
 	return out
 
 def writer(fname, mode, data, direc="", f_code='????',
-			encoding='utf-8', timeout=3):  # fc=0608 v
+			encoding='utf-8', timeout=3):	# fc=0608 v
 	"""Writing on a file
 
 	why this monster?
@@ -336,7 +321,7 @@ def writer(fname, mode, data, direc="", f_code='????',
 			_temp2 = direc.split('/')
 			_temp3 = 0
 			for _temp3 in range(len(_temp2)):
-				_temp += _temp2[_temp3] + '/'
+				_temp += f'{_temp2[_temp3]}/'
 				if not os.path.isdir(_temp):
 					break
 			raise PermissionError(_temp) from e
@@ -374,8 +359,6 @@ def get_dir_size(start_path = '.', limit=None, return_list= False, full_dir=True
 				total_size += os.path.getsize(fp)
 			if limit!=None and total_size>limit:
 				print('counted upto', total_size)
-				if return_list: return (-1, [])
-				return -1
-	if return_list: return total_size, r
-	return total_size
+				return (-1, []) if return_list else -1
+	return (total_size, r) if return_list else total_size
 

@@ -4,7 +4,13 @@ def generate_list(prefix):
 	#l = [globals()[name] for name in globals().keys() if name.startswith(prefix)]
 	#return (item for sublist in l for item in sublist)
 
-	return tuple( item for sublist in [globals()[name] for name in globals().keys() if name.startswith(prefix)] for item in sublist)
+	return tuple(
+		item
+		for sublist in [
+			globals()[name] for name in globals() if name.startswith(prefix)
+		]
+		for item in sublist
+	)
 
 def merge(*args):
 	txt = ' '.join(args)
@@ -43,7 +49,9 @@ li_play = ('play', 'lets play', 'hit', 'tune', 'sing')
 li_reload = ('re', 'reload', '11')
 li_fucku = ('fuck you', 'fuck u','fuck ya')
 li_loveu=('love u','i love you','love ya','love you','i love u','i love you so much','i really love you','i really love you a lot','i wuv u')
-li_check_int = ["check " + i for i in ('net', 'internet',"connection", "wifi", "network")]
+li_check_int = [
+	f"check {i}" for i in ('net', 'internet', "connection", "wifi", "network")
+]
 
 li_refuck = ('Fuck yourself!', 'Go to hell!', 'Whatever! You can\'t do that!')
 li_relove='love you too','love you so much','I love you too'
@@ -56,9 +64,10 @@ mc_resume = ['resume', 'resume it', 'resume the song', 'resume the music', 'cont
 mc_stop = ['stop', 'stop it', 'stop the song', 'stop the music']
 mc_replay = ['replay', 'replay the song', 'replay the music', 'restart', 'restart the song', 'restart the music']
 mc_vol_down = ['volume down', 'lower the volume', 'lower volume', 'vol down']
-mc_vol_up = ['volume '+i for i in ('up', 'higher')
-			 ] + [i+' the volume' for i in ('raise', 'increase', 'higher')
-				  ] + [i+' volume' for i in ('raise', 'increase', 'higher')]
+mc_vol_up = (
+	[f'volume {i}' for i in ('up', 'higher')]
+	+ [f'{i} the volume' for i in ('raise', 'increase', 'higher')]
+) + [f'{i} volume' for i in ('raise', 'increase', 'higher')]
 
 li_window_manage = ("forcemin",
 "hide",

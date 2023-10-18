@@ -65,23 +65,20 @@ class XprintClass:
 			return self.__dict__[name]
 
 	def make_str(self, *text, sep: str = " ", end: str = "\n", highlighter=False) -> str:
-		text = str(sep).join(map(str, text)) + str(end)
+		text = sep.join(map(str, text)) + end
 		text = self.tnt_helper(text, highlighter)
 		return text
 
-	def text_styling_markup(self, text: str) -> str:  # not in use
+	def text_styling_markup(self, text: str) -> str:	# not in use
 		''' for custom text stypling like html
 		print(tnt_helper('/<style= col: red>/ 69'))'''
 		if '/<' not in text:
 			return text
 
-		a = self.re['markup'].search(text)
-		while a:
+		while a := self.re['markup'].search(text):
 			style = a.group(1)
 			# do stuff with style
 			text = text.replace(a.group(0), '')
-			a = self.re['markup'].search(text)
-
 		return text
 
 	def tnt_helper(self, text, highlighter):

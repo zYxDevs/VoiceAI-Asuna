@@ -44,15 +44,11 @@ def html2str(data:str):
 	data = data.replace("<br>", "\n").replace("<br/>", "\n")
 	data = data.replace("&emsp;", "\t")
 
-	data = bs(data, _parser).text
-
-	return data
+	return bs(data, _parser).text
 
 def str2html(data:str):
 	data = data.replace("\n", "<br>")
-	data = data.replace("\t", "&emsp;")
-
-	return data
+	return data.replace("\t", "&emsp;")
 
 
 
@@ -76,7 +72,7 @@ def hdr(header):  # fc=0803 v
 	return str(header_list.index(header['User-Agent']))
 
 
-def get_link(i, current_link, homepage=None):  # UPDATED
+def get_link(i, current_link, homepage=None):	# UPDATED
 	"""Gets permanent link from relative link.
 
 	Args:
@@ -94,33 +90,30 @@ def get_link(i, current_link, homepage=None):  # UPDATED
 		homepage = get_homepage(current_link)
 
 	if i.startswith('#'): 
-		frag = gen_link_facts(current_link)['fragment']
-		if frag:
+		if frag := gen_link_facts(current_link)['fragment']:
 			i = current_link.partition('#')[0] + i
 	elif i.startswith('?'): 
 		no_Q = gen_link_facts(current_link)['noQuery']
-		query = gen_link_facts(current_link)['query']
-		if query:
-			i = no_Q + '?' + query + '&' + i[1:]
+		if query := gen_link_facts(current_link)['query']:
+			i = f'{no_Q}?{query}&{i[1:]}'
 
 		else:
-			i = no_Q + '?' + i[1:]
+			i = f'{no_Q}?{i[1:]}'
 
 		if frag:
-			i += '#' + frag
+			i += f'#{frag}'
 
 
 	elif i.startswith('//'):
 		if current_link.startswith('https'):
-			i = 'https:' + i
+			i = f'https:{i}'
 		elif current_link.startswith('http'):
-			i = 'http:' + i
+			i = f'http:{i}'
 		else:
-			scheme = gen_link_facts(homepage)['scheme']
-			if scheme:
+			if scheme := gen_link_facts(homepage)['scheme']:
 				i = scheme + i
 			else:
-				i = 'http:' + i
+				i = f'http:{i}'
 
 	elif i.startswith('../'):
 		_temp = gen_link_facts(current_link)["path"]
@@ -151,7 +144,7 @@ def get_link(i, current_link, homepage=None):  # UPDATED
 		if _current_link.endswith('/'):
 			i = current_link + i
 		else:
-			i = _current_link + '/' + i
+			i = f'{_current_link}/' + i
 
 
 
@@ -160,16 +153,9 @@ def get_link(i, current_link, homepage=None):  # UPDATED
 	if '//' not in i:
 		temp = homepage
 		if temp.endswith('/'):
-			if i.startswith('/'):
-				i = temp + i[1:]
-			else:
-				i = temp + i
+			i = temp + i[1:] if i.startswith('/') else temp + i
 		else:
-			if i.startswith('/'):
-				i = temp + i
-			else:
-				i = temp + '/' + i
-
+			i = temp + i if i.startswith('/') else temp + '/' + i
 	return i
 
 
@@ -260,7 +246,7 @@ def gen_link_facts(link):  # fc=080C
 
 
 def get_page(link, referer=False, header=None, cache=False, failed=False, do_not_cache=True,
-			session=None, return_none=True, raise_error=False, cache_priority=False):  # fc=080D
+			session=None, return_none=True, raise_error=False, cache_priority=False):	# fc=080D
 	"""Gets a page from the internet and returns the page object
 
 	link: page link
@@ -301,16 +287,8 @@ def get_page(link, referer=False, header=None, cache=False, failed=False, do_not
 	if session is None:
 		session = requests
 
-	if not referer:
-		referer_ = get_homepage(link)
-	else:
-		referer_ = referer
-
-	if header is None:
-		current_header = header_(referer_)
-	else:
-		current_header = header
-
+	referer_ = get_homepage(link) if not referer else referer
+	current_header = header_(referer_) if header is None else header
 	page = None
 	try:
 		page = session.get(link, headers=current_header, timeout=3)
@@ -484,10 +462,7 @@ class CachedData_2 :  # fc=0C00
 
 	def has_cache(self, url):
 		url_hash = md5(url.encode("utf-8")).hexdigest()
-		if url_hash in self.cached_webpages:
-			return url_hash
-
-		return False
+		return url_hash if url_hash in self.cached_webpages else False
 
 
 	def get_webpage(self, url):

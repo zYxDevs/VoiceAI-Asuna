@@ -4,7 +4,13 @@ def generate_list(prefix):
 	#l = [globals()[name] for name in globals().keys() if name.startswith(prefix)]
 	#return (item for sublist in l for item in sublist)
 
-	return tuple( item for sublist in [globals()[name] for name in globals().keys() if name.startswith(prefix)] for item in sublist)
+	return tuple(
+		item
+		for sublist in [
+			globals()[name] for name in globals() if name.startswith(prefix)
+		]
+		for item in sublist
+	)
 
 def merge(*args):
 	txt = ' '.join(args)
@@ -23,7 +29,7 @@ li_redo = 'redo my last command', 'retry my last command', 'redo last command', 
 li_QmyName = 'my name', 'my name is'
 
 li_syn_created = 'created', 'programmed', 'invented', 'designed', 'made'
-li_Qcreator = tuple(i + " you" for i in li_syn_created)
+li_Qcreator = tuple(f"{i} you" for i in li_syn_created)
 
 li_Acreator = 'I was %s by Ratul Hasan.', 'A boy named Ratul Hasan %s me.', 'Ratul Hasan %s me.'
 
@@ -38,20 +44,35 @@ _li_extra = 's', ' is', ' was', ' are', ' were', 're',''
 li_whats = tuple()
 li_who = tuple()
 li_where = tuple()
-li_whats += tuple(s + 'what' + x + t for x in _li_extra for s in li_do_u_know for t in (' the', ''))
-li_who += tuple(s + 'who' + x + t for x in _li_extra for s in li_do_u_know for t in (' the', ''))
-li_where += tuple(s + 'where' + x + t for x in _li_extra for s in li_do_u_know for t in (' the', ''))
+li_whats += tuple(
+	f'{s}what{x}{t}'
+	for x in _li_extra
+	for s in li_do_u_know
+	for t in (' the', '')
+)
+li_who += tuple(
+	f'{s}who{x}{t}'
+	for x in _li_extra
+	for s in li_do_u_know
+	for t in (' the', '')
+)
+li_where += tuple(
+	f'{s}where{x}{t}'
+	for x in _li_extra
+	for s in li_do_u_know
+	for t in (' the', '')
+)
 
 
-li_what_is = tuple('what' + x + t for x in ('s', ' is') for t in (' the', ''))
+li_what_is = tuple(f'what{x}{t}' for x in ('s', ' is') for t in (' the', ''))
 
 
-li_whats2 = tuple('what'+x for x in _li_extra)
-li_what_is2 = tuple('what'+x for x in ('s', ' is'))
+li_whats2 = tuple(f'what{x}' for x in _li_extra)
+li_what_is2 = tuple(f'what{x}' for x in ('s', ' is'))
 
 
 li_you = 'you', 'ya', 'u'
-li_your = tuple(i+'r' for i in li_you)
+li_your = tuple(f'{i}r' for i in li_you)
 li_r = 'are','re','re', 'r', 'r'
 li_r_u = tuple(merge(a, i) for i in li_you for a in li_r)
 
@@ -190,7 +211,9 @@ li_play = ('play', 'lets play', 'hit', 'tune', 'sing')
 li_reload = ('re', 'reload', '11')
 li_fucku = ('fuck you', 'fuck u','fuck ya')
 li_loveu=('love u','i love you','love ya','love you','i love u')
-li_check_int = ["check " + i for i in ('net', 'internet',"connection", "wifi", "network")]
+li_check_int = [
+	f"check {i}" for i in ('net', 'internet', "connection", "wifi", "network")
+]
 
 li_refuck = ('Fuck yourself!', 'Go to hell!', 'Whatever! You can\'t do that!')
 li_relove='love ya too','love you too','I love you too'
@@ -203,9 +226,10 @@ mc_resume = ['resume', 'resume it', 'resume the song', 'resume the music', 'cont
 mc_stop = ['stop', 'stop it', 'stop the song', 'stop the music']
 mc_replay = ['replay', 'replay the song', 'replay the music', 'restart', 'restart the song', 'restart the music']
 mc_vol_down = ['volume down', 'lower the volume', 'lower volume', 'vol down']
-mc_vol_up = ['volume '+i for i in ('up', 'higher')
-			 ] + [i+' the volume' for i in ('raise', 'increase', 'higher')
-				  ] + [i+' volume' for i in ('raise', 'increase', 'higher')]
+mc_vol_up = (
+	[f'volume {i}' for i in ('up', 'higher')]
+	+ [f'{i} the volume' for i in ('raise', 'increase', 'higher')]
+) + [f'{i} volume' for i in ('raise', 'increase', 'higher')]
 
 li_window_manage = ("forcemin",
 "hide",

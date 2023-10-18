@@ -98,11 +98,7 @@ def web_go(link):
 # web_go('C:/Users/Dell/Documents/Python/Project_Asuna/datapy.html')
 def linker(link):
 	"""Match for link url and open the link in browser"""
-	for i in links_li:
-		if link in i:
-			return i[0]
-
-	return False
+	return next((i[0] for i in links_li if link in i), False)
 
 
 def searcher(search_txt):
@@ -121,18 +117,17 @@ def wolfram(text, raw=''):
 	text: query
 	raw: the untouched user input for logging
 	"""
-	r = requests.get("http://api.wolframalpha.com/v1/spoken",
-					params={
-						"i": text,
-						"appid": "L32A8W-J8X5U6KG26"
-					}
-				)
-	if not r:
+	if r := requests.get(
+		"http://api.wolframalpha.com/v1/spoken",
+		params={"i": text, "appid": "L32A8W-J8X5U6KG26"},
+	):
+		return (
+			"My name is <:ai_name>"
+			if r.text == "My name is Wolfram Alpha"
+			else r.text
+		)
+	else:
 		return False
-
-	if r.text == "My name is Wolfram Alpha":
-		return "My name is <:ai_name>"
-	return r.text
 
 
 def _wiki(uix):
@@ -170,8 +165,7 @@ def wikisearch(uix='', raw='', user: User = None):
 	if user:
 		uix = parsed_names_back(uix, user)
 
-	wolf = wolfram(uix)
-	if wolf:
+	if wolf := wolfram(uix):
 		return wolf
 	log_xprint("\t/c/Searching wiki:/=//~`", uix, "`~/")
 
@@ -197,15 +191,16 @@ def wikisearch(uix='', raw='', user: User = None):
 				"render": "innerHTML",
 				"script": f"await tools.sleep(2000); window.open('{link}', '_blank')"
 			}
-			return {"message": response + f'\n\n<a href={link}">Read More</a>',
-				"render": "innerHTML"
-				}
+			return {
+				"message": f'{response}\n\n<a href={link}">Read More</a>',
+				"render": "innerHTML",
+			}
 
 
 		if wiki_search:
 			uix_ = wiki_search[0]
 
-			out = 'Did you mean ' + uix_ + '? '
+			out = f'Did you mean {uix_}? '
 
 			if not user:
 				return out
@@ -214,8 +209,9 @@ def wikisearch(uix='', raw='', user: User = None):
 			user.flags.ask_yes = user.msg_id
 
 			link, response = _wiki(uix_)
-			user.flags.on_yes = {"message": response + f'\n\n<a href={link}">Read More</a>',
-				"render": "innerHTML"
+			user.flags.on_yes = {
+				"message": f'{response}\n\n<a href={link}">Read More</a>',
+				"render": "innerHTML",
 			}
 			return out
 
@@ -226,7 +222,7 @@ def wikisearch(uix='', raw='', user: User = None):
 
 	log_unknown(uix, raw)
 	safe_string = urllib.parse.quote_plus(uix)
-	link = "https://www.google.com/search?q=" + safe_string
+	link = f"https://www.google.com/search?q={safe_string}"
 
 	if user:
 		user.flags.ask_yes = user.msg_id
@@ -692,94 +688,19 @@ def _basic_output(INPUT: str, user: User, ui: str, ui_raw: str, mid: int):
 		# 	user.flags.what_u_name_bit = 0
 		# user.flags.what_u_name_bit += 1
 
-	# elif re.search('((replay)|(pause)|(stop)|(resume)|(mute)|(continue))(\s((the )?(music)|(song))|(it))?', ui):
-	# 	if os_name == 'Windows':
-	# 		no_music = False
-	# 		if yt_plugin.music.isrunning() == True:
-	# 			if ui in mc_stop:
-	# 				yt_plugin.music.stop()
-	# 				out = ("Stopped")
-	# 				m_paused= None
-	# 			elif ui in mc_pause:
-	# 				if m_paused == True or yt_plugin.music.ispaused():
-	# 					out = ('The music is already paused.')
-	# 					m_paused = True
-	# 				else:
-	# 					yt_plugin.music.pause()
-	# 					talk_aloud_temp = True
-	# 					m_paused=True
-	# 			elif ui in mc_resume:
-	# 				if m_paused == True or yt_plugin.music.ispaused():
-	# 					yt_plugin.music.resume()
-	# 					talk_aloud_temp = False
-	# 					m_paused=False
-	# 				else:
-	# 					out = ('The music is already playing.')
-	# 					m_paused = False
-	# 			elif ui in mc_replay:
-	# 				yt_plugin.music.replay()
-	# 			else:
-	# 				out = ('/r/Invalid command/=/')
-	# 		else:
-	# 			no_music = True
-	# 		if no_music:
-	# 			out = ('No music is playing right now.')
-	# 	else:
-	# 		out = ("You can't control music play in your Operating system")
-	# elif ui in li_QyuiName:
-	# 	log_type(9)
-	# 	outtxt = "Yes, you can."
-	# 	out = (outtxt)
-	# 	# FCyuiName()
-	# elif ui.startswith(li_play):
-	# 	log_type(10)
-	# 	what = [i for i in li_play if ui.startswith(i) == True]
-	# 	reg_ex = re.search(what[0] + ' *(.+)', ui)
-	# 	if len(ui) != what[0] and reg_ex:
-	# 		uiopen = reg_ex.group(1)
-	# 		try:
-	# 			yt_plugin.music.stop()
-	# 		except: pass
-	# 		yt_plugin.play_youtube(uiopen)
-	# 		played_music=True
-	# 		m_paused= False
-		# music_patch.start()
-
-	# elif ui.startswith('install '):
-	# 	reg_ex = re.search('install (.+)', ui)
-	# 	uiopen = reg_ex.group(1)
-
-	# 	out = ('Installing ' + uiopen + '\n')
-	# 	install(uiopen)
-	# 	if check_installed(uiopen) == False:
-	# 		out = ('/r/Could not install!/=/')
-	# 	else:
-	# 		out = ('/g/Successfully installed %s/=/'%uiopen)
-	# elif ui.startswith('upgrade ') or ui.startswith('update '):
-	# 	reg_ex = re.search('up...?.. (.+)', ui)
-	# 	uiopen = reg_ex.group(1)
-	# 	if check_installed(uiopen) == False:
-	# 		install(uiopen)
-	# 	else:
-	# 		old_v = check_version(uiopen)
-	# 		out = ('Upgrading ' + uiopen + '\n')
-	# 		upgrade(uiopen)
-	# 		if old_v != check_version(uiopen):
-	# 			out = ('/g/Upgrade complete./=/')
-	# 		else:
-	# 			out = ('/r/Could not upgrade!/=/')
-
 	elif re_starts(ip.goto, ui):
 		link = re_search(ip.goto, ui)['query']
 		_url = linker(link)
 		if _url:
-			msg.rep(Rchoice('Opening ' + link,
-						"Opening " + link + " for you",
-											"Here you go",
-											"There you go"
-						),
-				script = f"window.open('{_url}', '_blank')"
-				)
+			msg.rep(
+				Rchoice(
+					f'Opening {link}',
+					f"Opening {link} for you",
+					"Here you go",
+					"There you go",
+				),
+				script=f"window.open('{_url}', '_blank')",
+			)
 		else:
 			msg.rep("Couldn't find the link. Here's a google search for it instead. \n")
 			msg.rep(searcher(link))
@@ -791,31 +712,6 @@ def _basic_output(INPUT: str, user: User, ui: str, ui_raw: str, mid: int):
 		searcher(query)
 
 		msg.add_intent("search")
-	# elif ui.startswith(li_can_do):
-	# 	log_type(11)
-	# 	if ui.startswith(li_goto):
-	# 		what = ''
-	# 		for i in li_goto:
-	# 			if ui.startswith(i):
-	# 				what = i
-	# 				break
-	# 		log_type(what)
-	# 		# what = [i for i in li_goto if ui.startswith(i) == True]
-	# 		reg_ex = re.search(re.escape(what) + ' (.+)', ui)
-	# 		if reg_ex:
-	# 			uiopen = reg_ex.group(1)
-	# 			# log_type(uiopen)
-	# 			if uiopen in links:
-	# 				log_type('link')
-	# 				if linker(uiopen):
-	# 					out = ('Opening ' + uiopen)
-	# 			else:
-	# 				searcher(uiopen)
-
-	# elif ui in li_AmyName:
-	# 	log_type("li_AmyName")
-	# 	out = (choice(li_AmyName) + user.nickname + '.')
-
 	elif re_check(ip.start_parrot, ui):
 		msg.rep('Parrot mode activated.')
 		user.flags.parrot = True
@@ -977,7 +873,7 @@ def _basic_output(INPUT: str, user: User, ui: str, ui_raw: str, mid: int):
 
 	if re_fullmatch(ip.slur, ui):
 		msg.rep(Rchoice(ot.slur))
-		
+
 		msg.add_intent("said_bad_word")
 
 

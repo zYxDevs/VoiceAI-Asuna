@@ -25,7 +25,7 @@ def run(inp):
 
 
 with open("./Asuna_data/server/unknown query (upto 09-Sept-2023).txt", "r") as f:
-	for line in f.readlines():
+	for line in f:
 		try:
 			line = line.strip()
 			if not line:

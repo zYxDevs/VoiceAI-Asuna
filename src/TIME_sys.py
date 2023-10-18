@@ -44,9 +44,7 @@ def utc_to_bd_time(utc_dt=None):
 
 	_utc = utc_dt or datetime.utcnow()
 	local = utc2local(_utc)
-	bd = local2bd_dt(local)
-
-	return bd
+	return local2bd_dt(local)
 
 
 def get_utc_time():

@@ -62,10 +62,8 @@ class BBC_News:
 		lastupdate = data[x:x + 29].decode('utf-8')
 
 		report = ''
-		news_list = []
 		report += '\nThis are the latest News at the BBC:\n(updated on:%s)\n' % lastupdate
-		news_list.append(report)
-
+		news_list = [report]
 		for i in tree.iter('item'):
 			title = i.find('title')
 			description = i.find('description')
@@ -75,7 +73,7 @@ class BBC_News:
 				continue
 			if not ok:
 				continue
-			news = '/hui/• {}: /=/\n-- {}\n'.format(title.text, description.text)
+			news = f'/hui/• {title.text}: /=/\n-- {description.text}\n'
 			news += "/s1/" + '\n'
 			report += news
 			news_list.append(news)
@@ -86,15 +84,14 @@ class BBC_News:
 
 	# print(__name__)
 	def task(self, Topic):
-		if __name__ == '__main__':
-			if check_internet(bbc_topics[Topic]):
-				from PRINT_TEXT3 import xprint
-				xprint(*self.news_report(Topic), wait_time= 0.03)
-				# print(*self.news_report(Topic))
-			else:
-				print('Could not access the server')
-		else:
+		if __name__ != '__main__':
 			return self.news_report(Topic)
+		if check_internet(bbc_topics[Topic]):
+			from PRINT_TEXT3 import xprint
+			xprint(*self.news_report(Topic), wait_time= 0.03)
+			# print(*self.news_report(Topic))
+		else:
+			print('Could not access the server')
 
 bbc_news = BBC_News()
 

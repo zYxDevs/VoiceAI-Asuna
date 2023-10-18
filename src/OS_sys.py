@@ -57,7 +57,7 @@ def install(pack, alias=None):  # fc=0701 v
 
 
 
-def install_req(pkg_name, alias=None):  # fc=0702 v
+def install_req(pkg_name, alias=None):	# fc=0702 v
 	"""install requirement package if not installed
 
 	args:
@@ -76,7 +76,7 @@ def install_req(pkg_name, alias=None):  # fc=0702 v
 			xprint("/rh/No internet! Failed to install requirements/=/\n/ruh/Closing in 5 seconds/=/")
 			return False
 
-		xprint("/y/Installing missing libraries (%s)/=/"%pkg_name)
+		xprint(f"/y/Installing missing libraries ({pkg_name})/=/")
 		install(pkg_name, alias)
 		delete_last_line()
 

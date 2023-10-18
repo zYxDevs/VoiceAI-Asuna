@@ -1,7 +1,7 @@
 D = set()
 
 with open("./Asuna_data/server/unknown query.txt", "r") as f:
-	for line in f.readlines():
+	for line in f:
 		D.add(line)
 
 with open("./Asuna_data/server/unknown query.txt", "w") as f:

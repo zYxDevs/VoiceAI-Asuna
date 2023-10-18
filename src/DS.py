@@ -7,7 +7,7 @@ class Callable_dict(dict):
 		self.__dict__ = self
 
 	def __call__(self, *key):
-		return all([i in self for i in key])
+		return all(i in self for i in key)
 
 
 class GETdict(Callable_dict):
@@ -68,8 +68,8 @@ class str2(str):
 
 	def example(self):
 		x = str2("abc")
-		print(x + "123")
-		print(repr(x+"123"))
+		print(f"{x}123")
+		print(repr(f"{x}123"))
 		print(x=="")
 
 #x = str2("abc")

@@ -35,8 +35,7 @@ class Cached_Response:
 		if name == 'text':
 			return self.text_()
 		else:
-			raise AttributeError(
-				"%s instance has no attribute '%s'" % (self.__class__, name))
+			raise AttributeError(f"{self.__class__} instance has no attribute '{name}'")
 
 	def text_(self):
 		"""Content of the response, in unicode.
@@ -55,7 +54,7 @@ class Cached_Response:
 		encoding = self.encoding
 
 		if not self.content:
-			return str('')
+			return ''
 
 		# Fallback to auto-detected encoding.
 		if self.encoding is None:
