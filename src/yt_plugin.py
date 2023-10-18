@@ -185,15 +185,17 @@ def url_research(search_string):
 
 	query_string = parse.urlencode({"search_query" : search_string})
 
-	html_content = request.urlopen("http://www.youtube.com/results?" + query_string)
+	html_content = request.urlopen(
+		f"http://www.youtube.com/results?{query_string}"
+	)
 
-	search_results = re.findall(r'\"url\"\:\"\/watch\?v\=(.{11})\"', html_content.read().decode())
-
-	if search_results:
-
+	if search_results := re.findall(
+		r'\"url\"\:\"\/watch\?v\=(.{11})\"', html_content.read().decode()
+	):
 		return search_results[0]
 
-	else: url_research(search_string)
+	else:
+		url_research(search_string)
 
 
 def get_cache():
@@ -231,7 +233,7 @@ class Youtube_mp3():
 		if check_internet('https://www.youtube.com') == True:
 			self.code = url_research(search_string)
 			i = 0
-			while self.code==None:
+			while self.code is None:
 				self.code = url_research(search_string)
 				if i>6:
 					xprint('  /yb/retry(', i, ')/=/', end='\r')
@@ -240,20 +242,19 @@ class Youtube_mp3():
 				i+=1
 			if i>0:
 				delthisline()
-		else:
-			if search_string in search_txt:
-				asd=tags[search_txt.index(search_string)]
-				self.code = codes[asd]
-			else: return False
+		elif search_string in search_txt:
+			asd=tags[search_txt.index(search_string)]
+			self.code = codes[asd]
+		else: return False
 
-		self.url= "http://www.youtube.com/watch?v="+ self.code
+		self.url = f"http://www.youtube.com/watch?v={self.code}"
 		return True
 
 	def link_parse(self, link):
 
 		if yt_code.search(link):
 			self.code = link
-			self.url= "http://www.youtube.com/watch?v="+ self.code
+			self.url = f"http://www.youtube.com/watch?v={self.code}"
 			self.search_string = link
 			return True
 
@@ -275,7 +276,7 @@ class Youtube_mp3():
 		self.dict_names = mk_title(get_title(self.url))
 		self.update_dat()
 
-		song_name="songs/"+self.dict_names+'.m4a'
+		song_name = f"songs/{self.dict_names}.m4a"
 
 
 		xprint("\n  /hui/ Buffering /=/ : /u/{0}/=/".format(self.dict_names))
@@ -291,10 +292,7 @@ class Youtube_mp3():
 				with yt_dlp.YoutubeDL(ydl_opts_) as ydl:
 					ydl.download(self.url)
 				break
-			except KeyboardInterrupt:
-				print('\n')
-				return False
-			except EOFError:
+			except (KeyboardInterrupt, EOFError):
 				print('\n')
 				return False
 			except (HTTPError, URLError):
@@ -369,82 +367,33 @@ def play_youtube(search, sleep_play = False):
 			if not x.url_search(search):
 				return 0
 
-		if not x.download_media():
+		if x.download_media():
+			play_music = bool(exists(song_name))
+		else:
 			return 0
 
-		if exists(song_name):
-			play_music=True
-		else: play_music=False
-	else:
-		#print(titles,counts,search_txt,codes,tags)
-		if search in search_txt:
-			asd=tags[search_txt.index(search)]
-			x.code = codes[asd]
-			x.dict_names = titles[asd]
-			song_name= loc("songs/"+x.dict_names+'.m4a')
-			if exists(song_name):
-				play_music=True
-			else: play_music=False
-		else: play_music=False
+	elif search in search_txt:
+		asd=tags[search_txt.index(search)]
+		x.code = codes[asd]
+		x.dict_names = titles[asd]
+		song_name = loc(f"songs/{x.dict_names}.m4a")
+		play_music = bool(exists(song_name))
+	else: play_music=False
 	if os_name !="Windows":
 		xprint("/y/Can only play on Windows/=/")
 		return
-	if play_music==True:
+	if play_music:
 		music=mplay.load(song_name, error="ignore")
 		try:
 			music.play()
 			if sleep_play:
 				sleep(music.duration())
-		except KeyboardInterrupt:
+		except (KeyboardInterrupt, EOFError):
 			print('\n')
 			music.stop()
-		except EOFError:
-			print('\n')
-			music.stop()
-
-
 	else:
 		xprint('/hui/ Unable to play due to /r/Internet Issue. /=/')
 	return 0
-
-	#delprevline()
-
-
-	"""if exists('songs/data2.py'):
-		with open('songs/data2.py','r') as file:
-			#file.write(x.dict_names.encode('utf-8'))
-			#print(file.read())
-			if file.read()!='':
-				exec(file.readlines()[16])
-				if search in search_txt:
-
-				if i.startswith(x.code+b"="):
-					print(i)
-					found=file.index(i)
-					exec(file[found])
-					exec(b'count='+x.dict+b'[0]')
-					data1=data[0]+1
-			else:
-				make_db()
-	else:
-		make_db()
-	if found==False:
-		with open('songs/data.py','ab+') as file:
-			file.write(x.code.encode('utf-8'))
-			file.write(b'= [1, "')
-			file.write(x.dict_names.encode('utf-8'))
-			file.write(b'",["')
-			file.write(search.encode('utf-8'))
-			file.write(b'"]]\n')
-	else:
-		print(found)
-		with open('songs/data.py','w+') as file:
-			old=file.readlines()[found]
-			exec(old)
-			exec('dat = '+x.code)
-			a=len(str(dat[0]))
-			new=x.code+'= ['+str(dat[0])+ old[16+a:len(old)-2]+',"'+search+'"]]'
-			file.write(file.read().replace(old,new))"""
 
 
 
@@ -458,7 +407,7 @@ while __name__=='__main__':
 	ui= input()
 
 	if ui=="pl":
-		for i in open('songs/watch_list.txt').readlines():
+		for i in open('songs/watch_list.txt'):
 			play_youtube(i, True)
 	elif ui=='plr':
 		plr= random.choices(open(loc('songs/watch_list.txt')).readlines(),k=random.randrange(20,30))

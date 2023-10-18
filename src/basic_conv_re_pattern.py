@@ -12,7 +12,13 @@ def generate_list(prefix):
 	# l = [globals()[name] for name in globals().keys() if name.startswith(prefix)]
 	# return (item for sublist in l for item in sublist)
 
-	return tuple(item for sublist in [globals()[name] for name in globals().keys() if name.startswith(prefix)] for item in sublist)
+	return tuple(
+		item
+		for sublist in [
+			globals()[name] for name in globals() if name.startswith(prefix)
+		]
+		for item in sublist
+	)
 
 
 def C(pattern):
@@ -358,10 +364,7 @@ ip.hate_you = [
 	C(rf"(i )?(really )?(hate|don('| )t like) {___you}"),
 ]
 
-ip.whats_up = [
-	C(r"wh?(u|a)t?( |')?s+ up+"),
-	C(r'^sup' + eos),
-]
+ip.whats_up = [C(r"wh?(u|a)t?( |')?s+ up+"), C(f'^sup{eos}')]
 
 
 ip.check_net = [
@@ -383,9 +386,10 @@ mc_stop = ['stop', 'stop it', 'stop the song', 'stop the music']
 mc_replay = ['replay', 'replay the song', 'replay the music',
 			 'restart', 'restart the song', 'restart the music']
 mc_vol_down = ['volume down', 'lower the volume', 'lower volume', 'vol down']
-mc_vol_up = ['volume '+i for i in ('up', 'higher')
-			 ] + [i+' the volume' for i in ('raise', 'increase', 'higher')
-				  ] + [i+' volume' for i in ('raise', 'increase', 'higher')]
+mc_vol_up = (
+	[f'volume {i}' for i in ('up', 'higher')]
+	+ [f'{i} the volume' for i in ('raise', 'increase', 'higher')]
+) + [f'{i} volume' for i in ('raise', 'increase', 'higher')]
 
 li_window_manage = ("forcemin",
 					"hide",

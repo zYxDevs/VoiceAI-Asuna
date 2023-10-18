@@ -68,9 +68,7 @@ class Tools:
 		term_col = shutil.get_terminal_size()[0]
 
 		s = self.styles[style] if style in self.styles else style
-		tt = ""
-		for i in text.split('\n'):
-			tt += i.center(term_col) + '\n'
+		tt = "".join(i.center(term_col) + '\n' for i in text.split('\n'))
 		return f"\n\n{s*term_col}\n{tt}{s*term_col}\n\n"
 
 
@@ -101,9 +99,8 @@ def handle_user_cookie(self: SH, on_ok="/", on_fail="/login"):
 	#print(cookie)
 	def get(k):
 		x = cookie.get(k)
-		if x is not None:
-			return x.value
-		return ""
+		return x.value if x is not None else ""
+
 	username = get("uname")
 	uid = get("uid")
 
@@ -112,7 +109,7 @@ def handle_user_cookie(self: SH, on_ok="/", on_fail="/login"):
 		user = user_handler.server_verify(username, uid)
 
 	# print([user, validity])
-	if not (user and validity==True):
+	if not user or validity != True:
 		if on_fail:
 
 			self.redirect(on_fail)
@@ -154,9 +151,7 @@ def send_login(self: SH, *args, **kwargs):
 	returns login.html on login request
 	js will redirect here or to home based on wheather user is logged in or not
 	"""
-	cookie_check = handle_user_cookie(self, on_fail="")
-
-	if cookie_check:
+	if cookie_check := handle_user_cookie(self, on_fail=""):
 		return None
 
 	return self.return_file(join_path(pyrobox_config.ftp_dir, "html_login.html"), cache_control="no-store")
@@ -167,8 +162,7 @@ def send_signup(self: SH, *args, **kwargs):
 	returns signup.html on signup request
 	js will redirect here or to home based on wheather user is logged in or not
 	"""
-	cookie_check = handle_user_cookie(self, on_fail="")
-	if cookie_check:
+	if cookie_check := handle_user_cookie(self, on_fail=""):
 		return None
 
 	return self.return_file(join_path(pyrobox_config.ftp_dir, "html_signup.html"), cache_control="no-store")
@@ -180,12 +174,11 @@ def send_test_page(self: SH, *args, **kwargs):
 	returns signup.html on signup request
 	js will redirect here or to home based on wheather user is logged in or not
 	"""
-	cookie_check = handle_user_cookie(self, on_ok="/", on_fail=None)
-	if cookie_check:
+	if cookie_check := handle_user_cookie(self, on_ok="/", on_fail=None):
 		return None
-		
-	
-	
+
+
+
 	user_handler.server_signup("Test_user", "TEST")
 
 	# ACCESS THE USER
@@ -203,15 +196,14 @@ def send_test_page(self: SH, *args, **kwargs):
 
 @SH.on_req('GET', '/voice')
 def send_voice(self: SH, *args, **kwargs):
-	cookie_check = handle_user_cookie(self, on_fail="/signup", on_ok="")
-	if cookie_check:
+	if cookie_check := handle_user_cookie(self, on_fail="/signup", on_ok=""):
 		return None
-	
+
 	# print(self.query)
 	voice = self.query.get("id", None)
 	if voice is None:
 		return None
-	
+
 	voice = voice[0]
 
 	path = join_path(appConfig.temp_file, "audio/", voice)
@@ -237,8 +229,7 @@ def send_default(self: SH, *args, **kwargs):
 		if not parts.path.endswith('/'):
 			# redirect browser - doing basically what apache does
 			self.send_response(HTTPStatus.MOVED_PERMANENTLY)
-			new_parts = (parts[0], parts[1], parts[2] + '/',
-							parts[3], parts[4])
+			new_parts = parts[0], parts[1], f'{parts[2]}/', parts[3], parts[4]
 			new_url = urllib.parse.urlunsplit(new_parts)
 			self.send_header("Location", new_url)
 			self.send_header("Content-Length", "0")
@@ -361,10 +352,9 @@ def auth_uname_pass_data(uname, pw, max_pw=64):
 	"""
 	valid_uname_re = re.compile(r"[^a-zA-Z0-9_]")
 	# print([uname, pw])
-	if len(uname)==0 or valid_uname_re.search(uname) or len(pw)>max_pw:
-		return False
-
-	return True
+	return (
+		len(uname) != 0 and not valid_uname_re.search(uname) and len(pw) <= max_pw
+	)
 
 
 def add_user_cookie(user_name, uid):
@@ -578,7 +568,6 @@ def chat(self: SH, *args, **kwargs):
 
 def main():
 	if 0 and not check_internet():
-		pass # now works
 		xprint("/rh/No internet connection!\nPlease connect to the internet and try again.\n\n/=//hu/THIS APP IS HIGHLY DEPENDENT ON INTERNET CONNECTION!/=/")
 		sys.exit(1)
 	run_server(port= 45454,

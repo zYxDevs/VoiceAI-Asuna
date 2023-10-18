@@ -43,7 +43,6 @@ class MessageObj(dict):
 #	 	return self.msg.__getitem__(__key)
 
 	def trimmed(self):
-		out = {}
 		items = [
 			"message",
 			"script",
@@ -51,15 +50,12 @@ class MessageObj(dict):
 			"expression",
 			"motion",
 			"delay",
-			
+
 			"mid",
 			"rid",
-			
-		]
-		for i in items:
-			out[i] = self.get(i)
 
-		return out
+		]
+		return {i: self.get(i) for i in items}
 		
 	def add_intent(self, intent: str):
 		"""Add message intent in list"""

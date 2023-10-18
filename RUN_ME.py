@@ -4,7 +4,7 @@
 import os
 import sys
 
-mainpyfile = os.path.dirname(os.path.abspath(__file__))+"/src/App_server.py"
+mainpyfile = f"{os.path.dirname(os.path.abspath(__file__))}/src/App_server.py"
 
 
 sys.path[0] = os.path.dirname(mainpyfile)

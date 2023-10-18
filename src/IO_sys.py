@@ -47,7 +47,7 @@ def delete_last_line(lines=1):  # fc=0502 v
 
 
 def safe_input(msg='', i_func=input, o_func=xprint,
-				on_error=KeyboardInterrupt):  # fc=0504 v
+				on_error=KeyboardInterrupt):	# fc=0504 v
 	"""gets user input and returns str
 
 	args:
@@ -59,14 +59,8 @@ def safe_input(msg='', i_func=input, o_func=xprint,
 
 	o_func(msg, end='')
 	try:
-		box = i_func()
-		return box
-	except EOFError:
-		if on_error == KeyboardInterrupt:
-			raise KeyboardInterrupt
-		else:
-			return on_error
-	except KeyboardInterrupt:
+		return i_func()
+	except (EOFError, KeyboardInterrupt):
 		if on_error == KeyboardInterrupt:
 			raise KeyboardInterrupt
 		else:
@@ -75,7 +69,7 @@ def safe_input(msg='', i_func=input, o_func=xprint,
 def asker(out='', default=None, True_False=(True, False),
 			extra_opt=tuple(), extra_return=tuple(),
 			i_func=input, o_func=xprint, on_error=KeyboardInterrupt,
-			condERR=Constants.condERR, no_bool=False):  # fc=0505 v
+			condERR=Constants.condERR, no_bool=False):	# fc=0505 v
 	"""asks for yes no or equivalent inputs
 
 	args:
@@ -108,10 +102,7 @@ def asker(out='', default=None, True_False=(True, False),
 	# Ques2 = Ques2
 
 	if not no_bool and Ques2 in Constants.cond:
-		if Ques2 in Constants.yes:
-			return True_False[0]
-		else:
-			return True_False[1]
+		return True_False[0] if Ques2 in Constants.yes else True_False[1]
 	else:
 		return extra_return[extra_opt.index(Ques2)]
 

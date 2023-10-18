@@ -33,7 +33,7 @@ def remove_non_ascii(text, f_code='????'):  # fc=0902 v
 	return ''.join([i if ord(i) < 128 else '' for i in text])
 
 
-def remove_non_uni(text, f_code='????', types='str', encoding='utf-8'):  # fc=0903 v
+def remove_non_uni(text, f_code='????', types='str', encoding='utf-8'):	# fc=0903 v
 	"""Converts a string or binary to unicode string or binary by removing all non unicode char
 
 	args:
@@ -46,9 +46,7 @@ def remove_non_uni(text, f_code='????', types='str', encoding='utf-8'):  # fc=09
 	try:
 		if type(text) == str:
 			text = text.encode(encoding, 'ignore')
-			if types == 'bin':
-				return text
-			return text.decode(encoding)
+			return text if types == 'bin' else text.decode(encoding)
 		if types == 'bin':
 			return text.decode(encoding, 'ignore').encode(encoding)
 		return text.decode(encoding, 'ignore')
@@ -102,10 +100,7 @@ def call_or_return(arg, *i_args, **i_kwargs):
 	if `arg` is callable it will call it with `i_args` and return
 	else it will return it as what it is
 	"""
-	if isinstance(arg, FunctionType):
-		return arg(*i_args, **i_kwargs)
-
-	return arg
+	return arg(*i_args, **i_kwargs) if isinstance(arg, FunctionType) else arg
 
 
 

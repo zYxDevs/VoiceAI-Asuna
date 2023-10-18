@@ -5,15 +5,17 @@ import net_sys
 
 class OnLine:
 	def __init__(self):
-		self.latest_link = "https://cdn.jsdelivr.net/gh/RaSan147/voiceAI-skins@" + self.get_latest_commit()
+		self.latest_link = f"https://cdn.jsdelivr.net/gh/RaSan147/voiceAI-skins@{self.get_latest_commit()}"
 		self.characters = self.get_characters()
 		self.cached_characters = {}
 
 	def get_characters(self):
-		r = net_sys.get_page(self.latest_link + "/characters.json",
-							cache=True,
-							do_not_cache=False,
-							cache_priority=True)
+		r = net_sys.get_page(
+			f"{self.latest_link}/characters.json",
+			cache=True,
+			do_not_cache=False,
+			cache_priority=True,
+		)
 		return json.loads(r.content)
 
 	def get_latest_commit(self):
@@ -29,7 +31,7 @@ class OnLine:
 		if name in self.cached_characters:
 			return self.cached_characters[name]
 		folder = c['folder']
-		link = self.latest_link + "/" + folder + "/skins.json"
+		link = f"{self.latest_link}/{folder}/skins.json"
 		r = net_sys.get_page(link,
 							cache=True,
 							do_not_cache=False,
@@ -50,7 +52,7 @@ class OnLine:
 	def get_skin_link(self, character, skin):
 		skin = self.get_skin(character, skin)
 		folder = self.get_character(character)['folder']
-		return self.latest_link + "/" + folder + "/" + skin['file']
+		return f"{self.latest_link}/{folder}/" + skin['file']
 
 if __name__ == "__main__":
 	online = OnLine()

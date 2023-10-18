@@ -37,15 +37,15 @@ def get_audio(text, voice=VOICE, output_dir='./'):
 	hashed = sha1()
 	hashed.update((text+voice).encode())
 	hashed_text = hashed.hexdigest()
-	
-	
+
+
 	f_name = os.path.join(output_dir, f"{hashed_text}.mp3")
-	
+
 	if os.path.isfile(f_name):
 		return f_name
-	
-	writer(f"init.txt", "w", "", direc=output_dir)
-	
+
+	writer("init.txt", "w", "", direc=output_dir)
+
 	loop = asyncio.get_event_loop_policy().set_event_loop(asyncio.new_event_loop())
 	loop = asyncio.get_event_loop_policy().get_event_loop()
 	try:

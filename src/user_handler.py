@@ -97,11 +97,9 @@ class User(GETdict):
 		if pointer == -1:
 			pointer = self.pointer
 		pointer = str(pointer)
-		file_path = os.path.join(self.user_path, pointer+'.json')
+		file_path = os.path.join(self.user_path, f'{pointer}.json')
 
-		# if the data asked for is already there
-		data = F_sys.reader(file_path, on_missing=None)
-		if data:
+		if data := F_sys.reader(file_path, on_missing=None):
 			return json.loads(data)
 
 		return None
@@ -161,7 +159,7 @@ class User(GETdict):
 		old.append(chat)
 
 		J = json.dumps(old, indent="\t", separators=(',', ':'))
-		F_sys.writer(pointer+'.json', 'w', J, self.user_path)
+		F_sys.writer(f'{pointer}.json', 'w', J, self.user_path)
 
 		return id
 
@@ -327,17 +325,14 @@ class UserHandler:
 		# user.flags.clear() # clear flags on refresh
 		self.update_user(username)
 
-		if return_user:
-			return user
-		return True
+		return user if return_user else True
 
 
 	def collection(self, username:str, uid:str):
-		# verify uid from users collection
-		x = self.get_user(username)
-		if not x: return None
-		if x.get("id")!=uid: return None
-		return x
+		if x := self.get_user(username):
+			return None if x.get("id")!=uid else x
+		else:
+			return None
 
 	def get_skin_link(self, username="", uid="", user=None ,retry=0):
 
@@ -392,9 +387,7 @@ class UserHandler:
 		user.bot_skin = (user.bot_skin + 1)%(total_skins)
 		print("sent skin", user.bot_skin)
 
-		_skin = str(user.bot_skin)
-
-		return _skin
+		return str(user.bot_skin)
 
 	def room_bg(self, username="", uid="", command="", custom="", user:User=None):
 		if not user:
@@ -404,11 +397,11 @@ class UserHandler:
 				return None
 			user =  _user
 
-		if command=="change":
+		if command == "change":
 			user.room = (user.room+1)%len(CONSTANTS.room_bg)
 			user.custom_room = None # clear custom room
 
-		if command=="custom":
+		elif command == "custom":
 			if len(custom)>2000:
 				return False
 			user.custom_room = custom #set custom room bg
