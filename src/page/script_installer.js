@@ -3,7 +3,7 @@ var notify_install = false // is INSTALL button visible
 var is_standalone = tools.is_standalone()
 
 
-if (0 && 'serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
   navigator.serviceWorker
     .register('/sw.js')
     .then(() => { console.log('Service Worker Registered'); });

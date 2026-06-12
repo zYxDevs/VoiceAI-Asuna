@@ -6,7 +6,7 @@ const log = console.log,
 	createElement = document.createElement.bind(document);
 
 
-String.prototype.toHtmlEntities = function() {
+String.prototype.toHtmlEntities = function () {
 	return this.replace(/./ugm, s => s.match(/[a-z0-9\s]+/i) ? s : "&#" + s.codePointAt(0) + ";");
 };
 
@@ -27,7 +27,7 @@ function safeJSONParse(str, propArray, maxLen) {
 				safeObj = parsedObj;
 			} else {
 				// copy only expected properties to the safeObj
-				propArray.forEach(function(prop) {
+				propArray.forEach(function (prop) {
 					if (parsedObj.hasOwnProperty(prop)) {
 						safeObj[prop] = parsedObj[prop];
 					}
@@ -35,7 +35,7 @@ function safeJSONParse(str, propArray, maxLen) {
 			}
 			return safeObj;
 		}
-	} catch(e) {
+	} catch (e) {
 		return null;
 
 	}
@@ -67,15 +67,15 @@ function go_link(type_code, locate) {
  * Touch-first or mobile-style environment (Client Hints mobile, coarse pointer, no fine pointer, or no hover).
  * Not the same as merely having a touchscreen (many laptops stay mouse-primary).
  */
-function is_mobile_device(){
-	if(typeof navigator !== "undefined" && navigator.userAgentData && navigator.userAgentData.mobile)
+function is_mobile_device() {
+	if (typeof navigator !== "undefined" && navigator.userAgentData && navigator.userAgentData.mobile)
 		return true;
 	const mq = window.matchMedia.bind(window);
-	if(mq("(pointer: coarse)").matches)
+	if (mq("(pointer: coarse)").matches)
 		return true;
-	if(!mq("(pointer: fine)").matches)
+	if (!mq("(pointer: fine)").matches)
 		return true;
-	if(!mq("(hover: hover)").matches)
+	if (!mq("(hover: hover)").matches)
 		return true;
 	return false;
 }
@@ -99,7 +99,7 @@ class Config {
 
 	}
 
-	get is_mobile_device(){
+	get is_mobile_device() {
 		return is_mobile_device();
 	}
 }
@@ -145,7 +145,7 @@ class Tools {
 	 */
 	time_offset() {
 
-	// for the reason of negative sign
+		// for the reason of negative sign
 		return new Date().getTimezoneOffset() * 60 * 1000 * -1;
 	}
 
@@ -155,7 +155,7 @@ class Tools {
 	 * @param {string|HTMLElement} elm - The element or its ID to remove child nodes from.
 	 */
 	del_child(elm) {
-		if (typeof(elm) == "string") {
+		if (typeof (elm) == "string") {
 			elm = byId(elm);
 		}
 		if (elm == null) {
@@ -216,7 +216,7 @@ class Tools {
 	 * @param {string} url - The URL of the script to add.
 	 * @returns {HTMLScriptElement} The newly created script element.
 	 */
-	add_script(url){
+	add_script(url) {
 		var script = createElement('script');
 		script.src = url;
 		document.body.appendChild(script);
@@ -261,7 +261,7 @@ class Tools {
 	 * @returns {boolean} - Returns `true` if the object is defined, `false` otherwise.
 	 */
 	is_defined(obj) {
-		return typeof(obj) !== "undefined"
+		return typeof (obj) !== "undefined"
 	}
 
 	/**
@@ -286,11 +286,11 @@ class Tools {
 	 * @param {string|null} [filename=null] - The name to give the downloaded file. If null, the file will be named "download".
 	 * @param {boolean} [new_tab=false] - Whether to open the download in a new tab.
 	 */
-	download(dataurl, filename = null, new_tab=false) {
+	download(dataurl, filename = null, new_tab = false) {
 		const link = createElement("a");
 		link.href = dataurl;
 		link.download = filename;
-		if(new_tab){
+		if (new_tab) {
 			link.target = "_blank";
 		}
 		link.click();
@@ -301,7 +301,7 @@ class Tools {
 	 * Pushes a new state object onto the history stack with a fake URL.
 	 * Used to prevent the browser from navigating to a new page when a link is clicked.
 	 */
-	fake_push(state={}){
+	fake_push(state = {}) {
 		history.pushState({
 			url: window.location.href,
 			state: state
@@ -313,7 +313,7 @@ class Tools {
 	 * @param {string} rel_path - The relative path to convert to a full URL path.
 	 * @returns {string} - The full URL path for the given relative path.
 	 */
-	full_path(rel_path){
+	full_path(rel_path) {
 		let fake_a = createElement("a")
 		fake_a.href = rel_path;
 		return fake_a.href;
@@ -330,7 +330,7 @@ class Tools {
 	 * @param {string} [value=''] - The value of the query parameter to add.
 	 * @returns {string} The updated URL with the added query parameter.
 	 */
-	add_query(url, query, value=''){
+	add_query(url, query, value = '') {
 		const url_obj = new URL(url);
 		url_obj.searchParams.set(query, value);
 
@@ -343,7 +343,7 @@ class Tools {
 	 * @param {string} [value=''] - The value of the query parameter. Defaults to an empty string.
 	 * @returns {string} The modified URL with the added query parameter.
 	 */
-	add_query_here(query, value=''){
+	add_query_here(query, value = '') {
 		return this.add_query(window.location.href, query, value);
 	}
 
@@ -374,9 +374,9 @@ class Tools {
 			textArea.focus();
 			textArea.select();
 
-			let ok=0;
-				// here the magic happens
-				if(document.execCommand('copy')) ok = 1
+			let ok = 0;
+			// here the magic happens
+			if (document.execCommand('copy')) ok = 1
 
 			textArea.remove();
 			return ok
@@ -384,8 +384,8 @@ class Tools {
 		}
 	}
 
-	fetch_json(url){
-		return fetch(url).then(r => r.json()).catch(e => {console.log(e); return null;})
+	fetch_json(url) {
+		return fetch(url).then(r => r.json()).catch(e => { console.log(e); return null; })
 	}
 
 	/**
@@ -393,7 +393,7 @@ class Tools {
 	 *
 	 * @returns {boolean} - `true` if the app is running in standalone mode, `false` otherwise.
 	 */
-	is_standalone(){
+	is_standalone() {
 		const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 		if (document.referrer.startsWith('android-app://')) {
 			return true; // twa-pwa
@@ -404,25 +404,25 @@ class Tools {
 	}
 
 	/** @see is_mobile_device */
-	is_mobile_device(){
+	is_mobile_device() {
 		return is_mobile_device();
 	}
 
 
-	async is_installed(){
+	async is_installed() {
 		var listOfInstalledApps = []
-		if("getInstalledRelatedApps" in navigator){
-			listOfInstalledApps  = await navigator.getInstalledRelatedApps();
+		if ("getInstalledRelatedApps" in navigator) {
+			listOfInstalledApps = await navigator.getInstalledRelatedApps();
 		}
 		console.log(listOfInstalledApps)
 		for (const app of listOfInstalledApps) {
-		// These fields are specified by the Web App Manifest spec.
-		console.log('platform:', app.platform);
-		console.log('url:', app.url);
-		console.log('id:', app.id);
+			// These fields are specified by the Web App Manifest spec.
+			console.log('platform:', app.platform);
+			console.log('url:', app.url);
+			console.log('id:', app.id);
 
-		// This field is provided by the UA.
-		console.log('version:', app.version);
+			// This field is provided by the UA.
+			console.log('version:', app.version);
 		}
 
 		return listOfInstalledApps
@@ -435,7 +435,7 @@ class Tools {
 		var ampm = hours >= 12 ? 'pm' : 'am';
 		hours = hours % 12;
 		hours = hours ? hours : 12; // the hour '0' should be '12'
-		minutes = minutes < 10 ? '0'+minutes : minutes;
+		minutes = minutes < 10 ? '0' + minutes : minutes;
 		var strTime = hours + ':' + minutes + ' ' + ampm;
 		return strTime;
 	}
@@ -448,10 +448,10 @@ class Tools {
 	 * @param {string} cvalue - The value of the cookie.
 	 * @param {number} [exdays=365] - The number of days until the cookie expires.
 	 */
-	setCookie(cname, cvalue, exdays=365) {
+	setCookie(cname, cvalue, exdays = 365) {
 		const d = new Date();
 		d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-		let expires = "expires="+d.toUTCString();
+		let expires = "expires=" + d.toUTCString();
 		document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 	}
 
@@ -465,14 +465,14 @@ class Tools {
 		let name = cname + "=";
 		let decodedCookie = decodeURIComponent(document.cookie);
 		let ca = decodedCookie.split(';');
-		for(let i = 0; i <ca.length; i++) {
-		let c = ca[i];
-		while (c.charAt(0) == ' ') {
-			c = c.substring(1);
-		}
-		if (c.indexOf(name) == 0) {
-			return c.substring(name.length, c.length);
-		}
+		for (let i = 0; i < ca.length; i++) {
+			let c = ca[i];
+			while (c.charAt(0) == ' ') {
+				c = c.substring(1);
+			}
+			if (c.indexOf(name) == 0) {
+				return c.substring(name.length, c.length);
+			}
 		}
 		return "";
 	}
@@ -482,8 +482,8 @@ class Tools {
 	 */
 	clear_cookie() {
 		document.cookie.split(";").forEach(c => {
-				document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-			}
+			document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+		}
 		);
 	}
 }
@@ -492,8 +492,8 @@ var tools = new Tools();
 tools.is_installed()
 
 '#########################################'
-if(localStorage.getItem('uname')=="Ray"){
-tools.enable_debug() // TODO:[DONE] Disable this in production
+if (localStorage.getItem('uname') == "Ray") {
+	tools.enable_debug() // TODO:[DONE] Disable this in production
 }
 '#########################################'
 
@@ -768,9 +768,10 @@ class Popup_Msg {
 	 */
 	close() {
 		this.onclose();
-		this.dismiss();
+		if (this.opened) {
+			historyManager.pop();
+		}
 		config.popup_msg_open = false;
-		this.init();
 	}
 
 	/**
@@ -780,23 +781,19 @@ class Popup_Msg {
 		this.opened = false;
 		this.popup_obj.classList.remove("active");
 		tools.toggle_scroll(1);
+
+		// Clean up contents after transition
+		setTimeout(() => {
+			this.clean();
+			this.made_popup = false;
+		}, 300);
 	}
 
 	/**
 	 * Dismisses the popup message.
 	 */
 	async dismiss() {
-		if (!this.is_active()) {
-			return;
-		}
-
-		history.back(); //this.hide()
-
-		await tools.sleep(200);
-
-		tools.del_child(this.header);
-		tools.del_child(this.content);
-		this.made_popup = false;
+		this.close();
 	}
 
 	/**
@@ -835,9 +832,9 @@ class Popup_Msg {
 		}
 
 		this.opened = true;
-		tools.fake_push();
-
-		HISTORY_ACTION.push(this.hide.bind(this));
+		historyManager.push('popup', () => {
+			this.hide();
+		});
 	}
 
 	/**
@@ -903,7 +900,7 @@ class Toaster {
 	 * @param {string} [bgcolor=''] - The background color of the toast. If not provided, the default background color will be used.
 	 * @returns {Promise<void>}
 	 */
-	async toast(msg, time, bgcolor='') {
+	async toast(msg, time, bgcolor = '') {
 		// toaster is not safe as popup by design
 		var sleep = 3000;
 
@@ -924,7 +921,7 @@ class Toaster {
 
 		toastBody.innerText = msg;
 		toastBody.classList.add("visible")
-		if(tools.is_defined(time)) sleep = time;
+		if (tools.is_defined(time)) sleep = time;
 		await tools.sleep(sleep)
 		toastBody.classList.remove("visible")
 		await tools.sleep(500)
@@ -949,7 +946,7 @@ var toaster = new Toaster()
  * @param {string} [options.y_msg="Yes"] - The text to display on the "yes" button.
  * @param {string} [options.n_msg="No"] - The text to display on the "no" button.
  */
-function r_u_sure({y=null_func, n=null, head="Are you sure", body="", y_msg="Yes",n_msg ="No"}={}) {
+function r_u_sure({ y = null_func, n = null, head = "Are you sure", body = "", y_msg = "Yes", n_msg = "No" } = {}) {
 	// popup_msg.close()
 	var box = createElement("div")
 	var msggg = createElement("p")
@@ -964,11 +961,11 @@ function r_u_sure({y=null_func, n=null, head="Are you sure", body="", y_msg="Yes
 	var n_btn = createElement("div");
 	n_btn.innerText = n_msg;//"Cancel"
 	n_btn.className = "pagination center";
-	n_btn.onclick = () => {return (n===null) ? popup_msg.close() : n()};
+	n_btn.onclick = () => { return (n === null) ? popup_msg.close() : n() };
 	box.appendChild(y_btn);
 	box.appendChild(line_break());
 	box.appendChild(n_btn);
-	popup_msg.createPopup(head, box) ; //"Are you sure?"
+	popup_msg.createPopup(head, box); //"Are you sure?"
 	popup_msg.open_popup();
 }
 
@@ -990,33 +987,160 @@ function r_u_sure({y=null_func, n=null, head="Are you sure", body="", y_msg="Yes
 
 
 
+/**
+ * HistoryManager — hash-guard based back-button interception.
+ *
+ * Strategy:
+ *   On init, push a guard entry with hash `#app` so the URL becomes:
+ *     http://host/#app
+ *
+ *   The user always sits on this guard entry. When they press back the
+ *   browser navigates from `#app` → base URL, which fires:
+ *     • hashchange  ← primary, very reliable in all browsers
+ *     • popstate    ← secondary backup
+ *
+ *   First back press  → show "Press back again" toast, reinstall guard
+ *   Second back (<2s) → actual exit (history.back past guard origin)
+ *
+ *   App-level navigation (chat, popup) is pushed ON TOP of the guard
+ *   using the same hash, so they're transparent to the exit logic.
+ */
+class HistoryManager {
+	constructor() {
+		this.chain = [];        // [ { name, onBack } ]
+		this.exiting = false;
+		this.GUARD = '#app';
+		this._LBP_KEY = 'hm_lbp';   // sessionStorage key for lastBackPressTime
+		this._recoverUntil = 0;
+		this.init();
+	}
 
+	get lastBackPressTime() {
+		return parseInt(sessionStorage.getItem(this._LBP_KEY) || '0', 10);
+	}
+	set lastBackPressTime(v) {
+		sessionStorage.setItem(this._LBP_KEY, String(v));
+	}
 
+	init() {
+		if (!window.history || !('pushState' in history)) return;
 
-var HISTORY_ACTION = [];
+		// ── In-page back detection (hash-based) ───────────────────────────────
+		// hashchange fires when the URL hash changes via back/forward navigation
+		window.addEventListener('hashchange', (e) => {
+			console.log('[HM-raw] hashchange', location.hash);
+			this._onBack();
+		});
+		// popstate fires for same-hash back presses (chain items share #app)
+		window.addEventListener('popstate', (e) => {
+			console.log('[HM-raw] popstate', location.hash, e.state);
+			this._onBack();
+		});
 
+		this._installGuard();
 
-if (window.history && "pushState" in history) {
-	// because JSHint told me to
-	// handle forward/back buttons
-	window.onpopstate = async function (evt) {
-		"use strict";
-		evt.preventDefault();
-		// guard against popstate event on chrome init
-		//log(evt.state)
+		// Re-verify the guard after lifecycle events that could wipe the hash
+		window.addEventListener('pageshow', () => this._checkGuard());
+		// setTimeout(() => this._checkGuard(), 500);
+		// setTimeout(() => this._checkGuard(), 1500);
+	}
 
-		if(HISTORY_ACTION){
-			console.log(HISTORY_ACTION)
-			HISTORY_ACTION.pop()();
-			return false
+	/** Push a guard entry — URL gets #app appended */
+	_installGuard() {
+		try {
+			const url = location.pathname + location.search + this.GUARD;
+			history.pushState({ hm_guard: true, ts: Date.now() }, document.title, url);
+			console.log('[History] Guard installed:', location.href, '| length:', history.length);
+		} catch (e) {
+			console.error('[History] Guard install failed', e);
+		}
+	}
+
+	/** Re-install guard only if the hash has drifted from #app */
+	_checkGuard() {
+		if (this._isRecovering()) return;
+		if (location.hash !== this.GUARD) {
+			console.log('[History] Guard missing (hash:"' + location.hash + '"), reinstalling…');
+			this._installGuard();
+		}
+	}
+
+	_isRecovering() { return Date.now() < this._recoverUntil; }
+
+	/**
+	 * Push an app-level state (popup, page).
+	 * Uses the same URL as the guard (including #app) — only the state differs.
+	 * Back press fires popstate → _onBack handles it via chain.
+	 */
+	push(name, onBack) {
+		if (!window.history || !('pushState' in history)) return;
+		history.pushState(
+			{ hm_item: true, name, ts: Date.now() },
+			document.title,
+			location.href   // keep #app in URL
+		);
+		this.chain.push({ name, onBack });
+		console.log('[History] push "' + name + '" | chain:', this.chain.length);
+	}
+
+	pop() {
+		if (this.chain.length > 0) { history.back(); return true; }
+		return false;
+	}
+
+	/* ── Back event handler (called by both hashchange and popstate) ───── */
+	_onBack() {
+		if (this.exiting) return;
+
+		// Ignore events we triggered ourselves.
+		// Both hashchange+popstate fire for one user back press;
+		// _installGuard (pushState) may also fire hashchange in some browsers.
+		if (this._isRecovering()) return;
+
+		console.log('[History] back event | hash:', location.hash,
+			'| chain:', this.chain.length);
+
+		// ── App-level back (popup, page, etc.) ───────────────────────────
+		if (this.chain.length > 0) {
+			const item = this.chain.pop();
+			console.log('[History] app-back "' + item.name + '"');
+			if (item.onBack) item.onBack();
+			// Chain items keep the same #app hash, just verify guard is intact
+			this._checkGuard();
+			return;
 		}
 
-		const x = evt
-		if (x.state && x.state.url==window.location.href){
-			return false
-		}
-		location.reload(true);
-};
+		// ── Exit-intent back (chain empty, user backed from guard → origin) ─
+		const now = Date.now();
 
+		if (now - this.lastBackPressTime < 2000) {
+			// Second back within 2 s → actual exit
+			console.log('[History] double-back → exit');
+			this.exiting = true;
+			if (typeof tools !== 'undefined' && tools.is_standalone()) window.close();
+			// Navigate back past guard origin to the real prior page.
+			// On a fresh tab this is a no-op; safety net reinstalls guard.
+			history.back();
+			setTimeout(() => {
+				this.exiting = false;
+				this._checkGuard();
+			}, 800);
+			return;
+		}
+
+		// First back → show toast + reinstall guard
+		this.lastBackPressTime = now;
+		console.log('[History] first back → showing exit toast');
+
+		if (typeof toaster !== 'undefined') {
+			toaster.toast('Press back again to exit', 2000);
+		}
+
+		// Brief de-dup window: covers twin hashchange+popstate from same press
+		this._recoverUntil = Date.now() + 300;
+		this._installGuard();   // pushState to #app (per spec: does NOT fire hashchange)
+	}
 }
+
+var historyManager = new HistoryManager();
 

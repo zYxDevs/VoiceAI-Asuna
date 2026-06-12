@@ -139,8 +139,13 @@ class Theme_Controller {
 		// vh = byId("brightness").clientHeight;
 		// vw = byId("brightness").clientWidth;
 
-		vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-		vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+		if (window.visualViewport) {
+			vw = window.visualViewport.width;
+			vh = window.visualViewport.height;
+		} else {
+			vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+			vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+		}
 
 	}
 
@@ -376,13 +381,11 @@ class Top_Bar {
 	}
 	show() {
 		this.top_bar.style.top = "0";
-		document.body.style.top = "50px";
 		this.top_bar.classList.remove("inactive");
 	}
 
 	hide() {
 		this.top_bar.style.top = "0";
-		document.body.style.top = "0";
 		/* display:none via inactive — -50px alone leaves a strip if the bar is taller than 50px */
 		this.top_bar.classList.add("inactive");
 	}
@@ -452,6 +455,25 @@ const resizer = () => {
 window.addEventListener("resize", (_e) => resizer());
 
 document.addEventListener("DOMContentLoaded", (_e) => resizer());
+
+if (window.visualViewport) {
+	window.visualViewport.addEventListener("resize", () => resizer());
+	window.visualViewport.addEventListener("scroll", () => {
+		// Lock the scroll offset to 0 when visual viewport moves/pans (which mobile browsers do for virtual keyboards)
+		if (window.scrollY !== 0 || window.visualViewport.offsetTop > 0) {
+			setTimeout(() => window.scrollTo(0, 0), 20);
+		}
+	});
+}
+
+// Lock window scroll position when typing in chat/input boxes to keep the header and layout from shifting up
+window.addEventListener("scroll", () => {
+	if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+		if (window.scrollY !== 0) {
+			window.scrollTo(0, 0);
+		}
+	}
+});
 }
 
 
@@ -480,7 +502,9 @@ class ChatSidebarControl {
 	}
 	
 	openNavR() {
-		tools.fake_push()
+		historyManager.push('sidebar', () => {
+			this._closeNavR();
+		});
 
 		tools.toggle_scroll(0);
 		this.sidebar_bg.style.display = "block";
@@ -512,7 +536,7 @@ class ChatSidebarControl {
 
 
 	closeNavR() {
-		history.back()
+		historyManager.pop();
 	}
 
 	closeNav() {

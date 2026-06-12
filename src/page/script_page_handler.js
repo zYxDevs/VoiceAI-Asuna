@@ -15,7 +15,10 @@ class PAGES{
 	}
 	
 	to_chat(){
-		tools.fake_push()
+		historyManager.push('chat', () => {
+			this.current_page = "home";
+			this._to_anime();
+		});
 		this._to_chat()
 	}
 	
@@ -28,8 +31,7 @@ class PAGES{
 
 	to_anime(){
 		if (this.current_page == "home") return;
-		// history.pushState({page: "anime"}, "Anime AI", "#anime")
-		history.back(); // this._to_anime()
+		historyManager.pop();
 	}
 }
 

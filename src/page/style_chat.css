@@ -1,26 +1,19 @@
 #chat-page {
 	font-family: var(--asuna-font-chat), system-ui, sans-serif;
 	font-size: 1.08rem;
-	display: block;
-	position: fixed;
+	display: flex;
+	flex-direction: column;
+	position: absolute;
 	width: 100%;
 	left: 0;
 	right: 0;
 	margin: 0;
-	margin-bottom: 60px;
 	bottom: 0;
-	overflow-y: auto;
+	overflow: hidden;
 	opacity: 1;
 	max-height: 100%;
 	box-shadow: none;
 	box-sizing: border-box;
-	/*
-	 * Bottom inset for fixed composer: keep on #chat-page (scroll container), not on .chats — otherwise
-	 * DevTools shows a huge green “padding” band on #chats and it feels like wasted space.
-	 */
-	padding-bottom: calc(
-		var(--chat-input-bar-h) + var(--chat-composer-stack-gap) + env(safe-area-inset-bottom, 0px)
-	);
 }
 
 /*
@@ -31,8 +24,7 @@
 #chat-page:not(.minimized) {
 	top: var(--chat-chats-pad-top);
 	padding-top: 0;
-	/* Tighter than minimized: margin-bottom: 60px already lifts the panel off the viewport bottom. */
-	padding-bottom: var(--chat-page-scroll-end-pad);
+	padding-bottom: 0;
 }
 
 #chat-page.inactive {
@@ -69,7 +61,18 @@
 	border-top-left-radius: var(--asuna-radius-lg);
 	border-top-right-radius: var(--asuna-radius-lg);
 	margin-bottom: 0;
-	transition: max-height 0.45s ease, margin 0.45s ease, opacity 0.45s ease;
+	transform: translateY(0);
+	transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+}
+
+#chat-page.minimized.hidden {
+	transform: translateY(100%);
+	opacity: 0;
+	pointer-events: none;
+}
+
+#chat-page.minimized:focus-within {
+	max-height: 280px;
 }
 
 /*
@@ -78,7 +81,7 @@
  */
 #chat-page.minimized .chats {
 	padding-top: 8px;
-	overflow-y: visible;
+	overflow-y: auto;
 }
 
 .chats {
@@ -87,13 +90,13 @@
 	width: calc(100% - 16px);
 	max-width: 720px;
 	margin: 0 auto;
-	height: max-content;
-	bottom: 0;
+	flex: 1 1 auto;
+	min-height: 0;
+	order: 1;
 	padding: 0 8px;
-	/* Single scroll container is #chat-page — avoids nested scrollports fighting on mobile */
-	overflow-y: visible;
+	overflow-y: auto;
 	padding-top: 0;
-	padding-bottom: 0;
+	padding-bottom: 16px;
 	z-index: 0;
 	flex-direction: column;
 	opacity: inherit;
@@ -118,10 +121,8 @@
 	--chat-composer-pad-x: clamp(8px, 3.2vw, 20px);
 	--chat-composer-pad-l: max(var(--chat-composer-pad-x), env(safe-area-inset-left, 0px));
 	--chat-composer-pad-r: max(var(--chat-composer-pad-x), env(safe-area-inset-right, 0px));
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
+	position: relative;
+	order: 2;
 	width: 100%;
 	max-width: 100%;
 	min-height: var(--chat-input-bar-h);

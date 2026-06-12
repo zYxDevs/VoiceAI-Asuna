@@ -70,11 +70,17 @@ class Bot_{
 		this.app.stage.addChild(this.model4);
 	
 		this.set_size();
+
+		// Schedule multiple sizing passes on initial load to handle rendering delays and texture loading times
+		setTimeout(() => this.set_size(), 100);
+		setTimeout(() => this.set_size(), 500);
+		setTimeout(() => this.set_size(), 1000);
 	}
 
 
 	
 	set_size(){
+		if (!this.model4) return;
 		theme_controller.getViewportSize();
 		// log(vw,vh)
 		var scale = 0.25;
@@ -190,4 +196,18 @@ console.log(bot.cubism4Model)
 
 window.addEventListener("resize", function () {
 	bot.set_size();
-})
+});
+
+window.addEventListener("load", function () {
+	bot.set_size();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+	bot.set_size();
+});
+
+if (window.visualViewport) {
+	window.visualViewport.addEventListener("resize", function () {
+		bot.set_size();
+	});
+}

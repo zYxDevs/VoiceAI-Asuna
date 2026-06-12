@@ -294,6 +294,10 @@ def send_voice(self: SH, *args, **kwargs):
 
 	return self.send_file(path)
 
+@SH.on_req('GET', '/ping')
+def send_ping(self: SH, *args, **kwargs):
+	return self.send_json('{"status": "ok"}')
+
 @SH.on_req('GET')
 def send_default(self: SH, *args, **kwargs):
 	"""

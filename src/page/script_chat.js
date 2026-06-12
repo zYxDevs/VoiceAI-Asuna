@@ -1,15 +1,16 @@
 // chat handler
 
-function request(url){
-	fetch(url).then(r => {
+async function request(url){
+	try {
+		const r = await fetch(url);
 		if(!r.ok)
-			return false
-		return r.text
-	}).catch(e => {
+			return null;
+		return await r.text();
+	} catch(e) {
 		// server is down
-		log(e)
-	})
-
+		log(e);
+		return null;
+	}
 }
 class ChatHandler{
 
@@ -32,12 +33,17 @@ class ChatHandler{
 			e.preventDefault();
 			that.send_message();
 		}
-		this.chat_input.onfocus = e => { //that.go_to_bottom()
+		this.chat_input.onfocus = e => {
+			setTimeout(() => {
+				window.scrollTo(0, 0);
+				document.body.scrollTop = 0;
+				that.go_to_bottom({ behavior: "auto" });
+			}, 30);
 		}
 		if('visualViewport' in window) {
-			window.visualViewport.onresize = e =>{
-				// that.go_to_bottom()
-			}
+			window.visualViewport.addEventListener("resize", () => {
+				that.go_to_bottom({ behavior: "auto" });
+			});
 		}
 
 		this.default_reply = {
@@ -52,14 +58,26 @@ class ChatHandler{
 		const behavior = opts.behavior !== undefined ? opts.behavior : "smooth";
 		await tools.sleep(30);
 
-		const page = this.page;
-		const maxScroll = Math.max(0, page.scrollHeight - page.clientHeight);
+		const chatsContainer = this.chats;
+		const originalScrollBehavior = chatsContainer.style.scrollBehavior;
+		if (behavior === "auto") {
+			chatsContainer.style.scrollBehavior = "auto";
+		}
+
+		const maxScroll = Math.max(0, chatsContainer.scrollHeight - chatsContainer.clientHeight);
 		if (maxScroll > 0) {
-			page.scrollTo({
+			chatsContainer.scrollTo({
 				top: maxScroll,
 				left: 0,
 				behavior,
 			});
+			if (behavior === "auto") {
+				chatsContainer.scrollTop = maxScroll;
+			}
+		}
+
+		if (behavior === "auto") {
+			chatsContainer.style.scrollBehavior = originalScrollBehavior;
 		}
 	}
 
@@ -365,7 +383,11 @@ class ChatHandler{
 		this.page.classList.remove('hidden');
 		
 		this.page.classList.remove('inactive');
-		top_bar.show()
+		if (!this.minimized) {
+			top_bar.show();
+		} else {
+			top_bar.hide();
+		}
 	}
 	
 	show_max_btn(display=true){
@@ -381,17 +403,29 @@ class ChatHandler{
 	
 	async minimize(){
 		this.minimized = true;
+		top_bar.hide(); // Hide the top bar immediately on transition to minimized (chat+model) mode
 		
 		pages.to_anime()
 		
 		// to_anime() takes 500ms to take action. So wait for 550ms
 		await tools.sleep(550)
-		this.show_page();
 		this.page.classList.add("minimized");
-		/* Let max-height transition finish so scrollHeight/clientHeight match the sheet (0.45s CSS). */
-		await tools.sleep(480);
+		this.page.classList.remove("inactive");
+		
+		// Scroll to bottom synchronously while invisible (opacity: 0)
+		const chatsContainer = this.chats;
+		const originalBehavior = chatsContainer.style.scrollBehavior;
+		chatsContainer.style.scrollBehavior = "auto";
+		
+		const maxScroll = Math.max(0, chatsContainer.scrollHeight - chatsContainer.clientHeight);
+		if (maxScroll > 0) {
+			chatsContainer.scrollTop = maxScroll;
+		}
+		
+		chatsContainer.style.scrollBehavior = originalBehavior;
+		
+		this.show_page();
 		await this.go_to_bottom({ behavior: "auto" });
-		top_bar.hide();
 		this.show_max_btn()
 		byId("to-chat").classList.add("invisible")
 	}
@@ -399,9 +433,9 @@ class ChatHandler{
 	async maximize() {
 		// Original behavior: leave minimized overlay and hide chat — full viewport for character only.
 		this.minimized = false;
-		this.page.classList.remove("minimized");
 		this.show_max_btn(false);
 		await this.hide_page();
+		this.page.classList.remove("minimized");
 		byId("to-chat").classList.remove("invisible");
 		pages.current_page = "home";
 		try {
@@ -410,15 +444,33 @@ class ChatHandler{
 			log(e);
 		}
 	}
-	
-
-
-
 
 }
 
 var chat = new ChatHandler();
-// chat.active_page()
 
-// setInterval(chat.get_msg_index.bind(chat), 1500);
+// Connectivity check
+function checkConnectivity() {
+	fetch('/ping')
+		.then(res => {
+			if (res.ok) {
+				bot.set_status(true);
+			} else {
+				bot.set_status(false);
+			}
+		})
+		.catch(() => {
+			bot.set_status(false);
+		});
+}
+
+// Initial check on load
+window.addEventListener('DOMContentLoaded', () => {
+	checkConnectivity();
+	setInterval(checkConnectivity, 10000); // Check connection status every 10s
+});
+
+// React immediately to browser connection events
+window.addEventListener('online', () => bot.set_status(true));
+window.addEventListener('offline', () => bot.set_status(false));
 
